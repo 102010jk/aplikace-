@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X } from 'lucide-react'
+import { animate, stagger } from 'animejs'
 import { useTrackerStore } from '../../store/useTrackerStore'
 import { useSearch } from '../../hooks/useSearch'
 import { SearchResultCard } from './SearchResultCard'
@@ -16,8 +17,22 @@ export function SearchModal() {
   const library = useTrackerStore(s => s.library)
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
   const { results, loading, error } = useSearch(query)
   const { showToast } = useToast()
+
+  // Stagger animate results when they arrive
+  useEffect(() => {
+    if (!resultsRef.current || results.length === 0) return
+    const items = resultsRef.current.querySelectorAll('[data-result]')
+    animate(Array.from(items), {
+      opacity: [0, 1],
+      translateX: [-12, 0],
+      duration: 350,
+      delay: stagger(45),
+      ease: 'easeOutExpo',
+    })
+  }, [results])
 
   useEffect(() => {
     if (searchOpen) {
@@ -107,25 +122,20 @@ export function SearchModal() {
                 </p>
               )}
 
-              <motion.div layout>
-                {results.map((item, i) => {
+              <div ref={resultsRef}>
+                {results.map((item) => {
                   const key = `${item.media_type}-${item.id}`
                   return (
-                    <motion.div
-                      key={key}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04 }}
-                    >
+                    <div key={key} data-result style={{ opacity: 0 }}>
                       <SearchResultCard
                         item={item}
                         inLibrary={!!library[key]}
                         onAdd={() => handleAdd(item)}
                       />
-                    </motion.div>
+                    </div>
                   )
                 })}
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>

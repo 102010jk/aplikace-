@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { animate } from 'animejs'
 
 interface Props {
   watched: number
@@ -6,8 +7,24 @@ interface Props {
 }
 
 export function ProgressBar({ watched, total }: Props) {
+  const fillRef = useRef<HTMLDivElement>(null)
+  const prevPct = useRef(0)
+
   if (total === 0) return null
   const pct = Math.round((watched / total) * 100)
+
+  useEffect(() => {
+    if (!fillRef.current) return
+    animate(fillRef.current, {
+      width: [`${prevPct.current}%`, `${pct}%`],
+      duration: 600,
+      ease: 'easeOutExpo',
+    })
+    prevPct.current = pct
+  }, [pct])
+
+  const color =
+    pct === 100 ? '#22c55e' : pct === 0 ? '#374151' : '#fbbf24'
 
   return (
     <div className="w-full">
@@ -16,13 +33,10 @@ export function ProgressBar({ watched, total }: Props) {
         <span className="text-xs text-muted">{pct}%</span>
       </div>
       <div className="h-1 bg-border rounded-full overflow-hidden">
-        <motion.div
-          className={`h-full rounded-full ${
-            pct === 100 ? 'bg-green-500' : pct === 0 ? 'bg-muted' : 'bg-amber-400'
-          }`}
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+        <div
+          ref={fillRef}
+          className="h-full rounded-full"
+          style={{ width: `${pct}%`, backgroundColor: color }}
         />
       </div>
     </div>

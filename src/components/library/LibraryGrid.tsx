@@ -1,4 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { animate, stagger } from 'animejs'
 import { useTrackerStore } from '../../store/useTrackerStore'
 import { MediaCard } from './MediaCard'
 import { FilterBar } from '../filters/FilterBar'
@@ -10,6 +12,9 @@ export function LibraryGrid() {
   const filterType = useTrackerStore(s => s.filterType)
   const filterStatus = useTrackerStore(s => s.filterStatus)
 
+  const gridRef = useRef<HTMLDivElement>(null)
+  const prevCountRef = useRef(0)
+
   const entries = Object.entries(library) as [string, TrackedMedia][]
 
   const filtered = entries.filter(([, item]) => {
@@ -19,13 +24,43 @@ export function LibraryGrid() {
     return true
   })
 
-  // Sort: in_progress first, then not_watched, then watched
   const order = { in_progress: 0, not_watched: 1, watched: 2 }
   filtered.sort(([, a], [, b]) => {
     const diff = order[a.status] - order[b.status]
     if (diff !== 0) return diff
     return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
   })
+
+  // Stagger animate newly added cards
+  useEffect(() => {
+    if (!gridRef.current) return
+    const cards = gridRef.current.querySelectorAll('[data-card]')
+    const newCount = filtered.length
+    const prev = prevCountRef.current
+
+    if (newCount > prev) {
+      // Only animate the new cards
+      const newCards = Array.from(cards).slice(0, newCount - prev)
+      animate(newCards, {
+        opacity: [0, 1],
+        translateY: [32, 0],
+        scale: [0.92, 1],
+        duration: 450,
+        delay: stagger(55),
+        ease: 'easeOutExpo',
+      })
+    } else if (prev === 0 && newCount > 0) {
+      animate(Array.from(cards), {
+        opacity: [0, 1],
+        translateY: [24, 0],
+        scale: [0.95, 1],
+        duration: 420,
+        delay: stagger(55, { start: 100 }),
+        ease: 'easeOutExpo',
+      })
+    }
+    prevCountRef.current = newCount
+  }, [filtered.length])
 
   if (entries.length === 0) {
     return (
@@ -42,29 +77,25 @@ export function LibraryGrid() {
   return (
     <div>
       <FilterBar />
-
       {filtered.length === 0 ? (
         <EmptyState title="Žádné výsledky" description="Zkus změnit filtry." />
       ) : (
-        <motion.div
-          layout
+        <div
+          ref={gridRef}
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
         >
           <AnimatePresence>
             {filtered.map(([key, item]) => (
               <motion.div
                 key={key}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
+                data-card
+                exit={{ opacity: 0, scale: 0.88, transition: { duration: 0.18 } }}
               >
                 <MediaCard item={item} itemKey={key} />
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
       )}
     </div>
   )
