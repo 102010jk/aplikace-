@@ -10,12 +10,10 @@ import { formatRating } from '../../utils/format'
 import type { TrackedShow } from '../../types'
 
 export function DetailModal() {
-  const { activeDetailId, library, closeDetail, setMovieWatched } = useTrackerStore(s => ({
-    activeDetailId: s.activeDetailId,
-    library: s.library,
-    closeDetail: s.closeDetail,
-    setMovieWatched: s.setMovieWatched,
-  }))
+  const activeDetailId = useTrackerStore(s => s.activeDetailId)
+  const library = useTrackerStore(s => s.library)
+  const closeDetail = useTrackerStore(s => s.closeDetail)
+  const setMovieWatched = useTrackerStore(s => s.setMovieWatched)
 
   const item = activeDetailId ? library[activeDetailId] : null
 

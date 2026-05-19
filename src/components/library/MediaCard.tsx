@@ -15,10 +15,8 @@ interface Props {
 }
 
 export function MediaCard({ item, itemKey }: Props) {
-  const { openDetail, removeMedia } = useTrackerStore(s => ({
-    openDetail: s.openDetail,
-    removeMedia: s.removeMedia,
-  }))
+  const openDetail = useTrackerStore(s => s.openDetail)
+  const removeMedia = useTrackerStore(s => s.removeMedia)
   const [showRemove, setShowRemove] = useState(false)
 
   const poster = posterUrl(item.posterPath)

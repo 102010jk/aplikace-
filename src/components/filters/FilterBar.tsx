@@ -15,11 +15,9 @@ const statusFilters: { value: FilterStatus; label: string }[] = [
 ]
 
 export function FilterBar() {
-  const { filterType, filterStatus, setFilter } = useTrackerStore(s => ({
-    filterType: s.filterType,
-    filterStatus: s.filterStatus,
-    setFilter: s.setFilter,
-  }))
+  const filterType = useTrackerStore(s => s.filterType)
+  const filterStatus = useTrackerStore(s => s.filterStatus)
+  const setFilter = useTrackerStore(s => s.setFilter)
 
   return (
     <div className="flex flex-wrap gap-4 mb-6">

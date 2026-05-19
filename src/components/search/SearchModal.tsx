@@ -10,12 +10,10 @@ import { useToast } from '../ui/Toast'
 import type { TMDBMovie, TMDBShow } from '../../types'
 
 export function SearchModal() {
-  const { searchOpen, closeSearch, addMedia, library } = useTrackerStore(s => ({
-    searchOpen: s.searchOpen,
-    closeSearch: s.closeSearch,
-    addMedia: s.addMedia,
-    library: s.library,
-  }))
+  const searchOpen = useTrackerStore(s => s.searchOpen)
+  const closeSearch = useTrackerStore(s => s.closeSearch)
+  const addMedia = useTrackerStore(s => s.addMedia)
+  const library = useTrackerStore(s => s.library)
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const { results, loading, error } = useSearch(query)

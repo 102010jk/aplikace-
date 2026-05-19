@@ -6,11 +6,9 @@ import { EmptyState } from '../ui/EmptyState'
 import type { TrackedMedia } from '../../types'
 
 export function LibraryGrid() {
-  const { library, filterType, filterStatus } = useTrackerStore(s => ({
-    library: s.library,
-    filterType: s.filterType,
-    filterStatus: s.filterStatus,
-  }))
+  const library = useTrackerStore(s => s.library)
+  const filterType = useTrackerStore(s => s.filterType)
+  const filterStatus = useTrackerStore(s => s.filterStatus)
 
   const entries = Object.entries(library) as [string, TrackedMedia][]
 

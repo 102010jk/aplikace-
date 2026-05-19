@@ -20,11 +20,9 @@ export function SeasonAccordion({ itemKey, showId, seasonNumber, trackedSeason, 
   const [loading, setLoading] = useState(false)
   const [metaEpisodes, setMetaEpisodes] = useState<TMDBEpisode[]>([])
   const [fetched, setFetched] = useState(false)
-  const { loadSeasonEpisodes, toggleEpisode, markSeasonWatched } = useTrackerStore(s => ({
-    loadSeasonEpisodes: s.loadSeasonEpisodes,
-    toggleEpisode: s.toggleEpisode,
-    markSeasonWatched: s.markSeasonWatched,
-  }))
+  const loadSeasonEpisodes = useTrackerStore(s => s.loadSeasonEpisodes)
+  const toggleEpisode = useTrackerStore(s => s.toggleEpisode)
+  const markSeasonWatched = useTrackerStore(s => s.markSeasonWatched)
 
   useEffect(() => {
     if (!open || fetched) return
