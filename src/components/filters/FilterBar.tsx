@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { useTrackerStore } from '../../store/useTrackerStore'
 import type { FilterType, FilterStatus } from '../../types'
 
@@ -29,18 +28,13 @@ export function FilterBar() {
           <button
             key={f.value}
             onClick={() => setFilter(f.value, undefined)}
-            className="relative px-3 py-1.5 text-sm rounded-lg transition-colors"
+            className={`relative px-3 py-1.5 text-sm rounded-lg transition-all font-medium ${
+              filterType === f.value
+                ? 'bg-accent text-white'
+                : 'text-muted hover:text-white'
+            }`}
           >
-            {filterType === f.value && (
-              <motion.div
-                layoutId="type-pill"
-                className="absolute inset-0 bg-accent rounded-lg"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            )}
-            <span className={`relative z-10 font-medium ${filterType === f.value ? 'text-white' : 'text-muted hover:text-white'}`}>
-              {f.label}
-            </span>
+            {f.label}
           </button>
         ))}
       </div>
@@ -50,18 +44,13 @@ export function FilterBar() {
           <button
             key={f.value}
             onClick={() => setFilter(undefined, f.value)}
-            className="relative px-3 py-1.5 text-sm rounded-lg transition-colors"
+            className={`relative px-3 py-1.5 text-sm rounded-lg transition-all font-medium ${
+              filterStatus === f.value
+                ? 'bg-accent/80 text-white'
+                : 'text-muted hover:text-white'
+            }`}
           >
-            {filterStatus === f.value && (
-              <motion.div
-                layoutId="status-pill"
-                className="absolute inset-0 bg-accent/80 rounded-lg"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            )}
-            <span className={`relative z-10 font-medium ${filterStatus === f.value ? 'text-white' : 'text-muted hover:text-white'}`}>
-              {f.label}
-            </span>
+            {f.label}
           </button>
         ))}
       </div>
